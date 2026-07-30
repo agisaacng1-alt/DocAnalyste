@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String           @id @default(cuid())
+  email     String           @unique
+  credits   Int              @default(0)
+  createdAt DateTime         @default(now())
+  payments  PaymentRequest[]
+}
+
+model PaymentRequest {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  amountUsd     Float
+  amountCdf     Float
+  credits       Int
+  operator      String
+  reference     String    @unique
+  transactionId String?
+  status        String    @default("pending")
+  createdAt     DateTime  @default(now())
+  validatedAt   DateTime?
+}
