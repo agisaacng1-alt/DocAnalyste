@@ -17,11 +17,14 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
-// Configuration des métadonnées et lien vers le fichier manifest.json (PWA)
+// Configuration des métadonnées, du favicon et lien vers le fichier manifest.json (PWA)
 export const metadata: Metadata = {
   title: "DocAnalyste",
   description: "Analysez vos documents en un clic ou en mode guidé",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
