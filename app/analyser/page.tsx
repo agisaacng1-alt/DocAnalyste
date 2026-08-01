@@ -231,13 +231,32 @@ export default function Home() {
             <p className="mode-locked-note">Le mode est verrouillé une fois l'analyse commencée. Cliquez sur "Nouveau" pour en changer.</p>
           )}
 
-          {/* Bouton de lancement initial si aucun message */}
+          {/* Bloc de lancement initial : uniquement tant qu'il n'y a aucun message.
+              CORRECTIF : en mode Interactif, on affiche désormais un textarea pour
+              saisir la première question — auparavant seul le bouton apparaissait,
+              sans aucun moyen de remplir `question`, donc `canAsk` restait bloqué
+              à false et "Analyser" ne faisait jamais rien. */}
           {messages.length === 0 && (
             <div style={{ marginTop: '20px' }}>
-              {isFirstAutoTurn && (
+              {isFirstAutoTurn ? (
                 <p className="auto-explainer" style={{ marginBottom: '12px' }}>
                   Le rapport complet (forces, faiblesses, suggestions) sera généré automatiquement.
                 </p>
+              ) : (
+                <textarea
+                  className="question-box"
+                  placeholder="Que voulez-vous savoir sur ce document ?"
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  disabled={!fileText}
+                  style={{ marginBottom: '10px' }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey && canAsk) {
+                      e.preventDefault();
+                      askClaude();
+                    }
+                  }}
+                />
               )}
               <button
                 className="ask-btn"
@@ -272,7 +291,7 @@ export default function Home() {
               {fileText
                 ? (mode === 'auto'
                     ? 'Cliquez sur "Générer le rapport complet" ci-dessus pour lancer l\'analyse.'
-                    : 'Posez votre question ci-dessous : la réponse apparaîtra ici.')
+                    : 'Posez votre question ci-dessus : la réponse apparaîtra ici.')
                 : 'Chargez d’abord un document pour pouvoir l’interroger.'}
             </p>
           ) : (
@@ -291,7 +310,8 @@ export default function Home() {
             </div>
           )}
 
-          {/* Zone de saisie de suivi (apparaît ou reste active après le premier message) */}
+          {/* Zone de saisie de suivi (n'apparaît qu'après le premier message,
+              qu'il vienne du mode Automatisé ou du mode Interactif) */}
           {fileText && messages.length > 0 && (
             <div className="followup-box-container">
               <p className="step-label" style={{ marginTop: '20px', marginBottom: '8px' }}>Posez une question de suivi</p>
